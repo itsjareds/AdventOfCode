@@ -54,9 +54,6 @@ parseSeeds txt = map num . tail . T.words $ txt
 genRange :: [Int] -> [Int]
 genRange xs = concat [ [a..a+b-1] | (a:b:cs) <- divvy 2 2 xs ]
 
---genRange [] = []
---genRange (a:b:xs) = [a..a+b-1] ++ genRange xs
-
 parseMap :: Text -> [Map]
 parseMap txt =
   let content = T.lines . T.strip $ txt
