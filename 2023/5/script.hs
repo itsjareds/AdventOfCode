@@ -52,7 +52,7 @@ parseSeeds :: Text -> [Int]
 parseSeeds txt = map num . tail . T.words $ txt
 
 genRange :: [Int] -> [Int]
-genRange xs = concat [ [a..a+b-1] | (a:b:cs) <- divvy 2 2 xs ]
+genRange xs = concat [ [a..a+b-1] | (a:b:_) <- divvy 2 2 xs ]
 
 parseMap :: Text -> [Map]
 parseMap txt =
