@@ -9,19 +9,21 @@ import Data.List
 import Data.List.Split
 import qualified Data.Text as T
 
-data Map = Map Int Int Int deriving (Show)
+data Map = Map Range Range deriving (Show)
+data Range = Range Int Int deriving (Show)
 
 main = do
-  content <- readFile "input"
+  content <- readFile "input2"
 
   let file = T.breakOn "\n" . T.pack $ content
   let seeds = parseSeeds . fst $ file
-  --print seeds
+  print seeds
 
   let maps = map parseMap . T.splitOn "\n\n" . T.strip . snd $ file
-  --print maps
+  print maps
 
   print "Part 1"
+  print . map (findLocation maps) $ seeds
   print . minimum . map (findLocation maps) $ seeds
 
   --print "Part 2"
@@ -32,15 +34,19 @@ main = do
 
 findLocation :: [[Map]] -> Int -> Int
 findLocation ms n = foldl' (traverseMaps) n ms
---findLocation [] n = n
---findLocation (m:ms) n = findLocation ms $ traverseMaps n m
 
 traverseMaps :: Int -> [Map] -> Int
 traverseMaps n [] = n
-traverseMaps n ((Map dest source len):ms)
-  | 0 <= diff && diff < len = dest + diff
-  | otherwise = traverseMaps n ms
-  where diff = n - source
+traverseMaps n ((Map (Range dest_start _) source):ms) =
+  let index = rangeIndex source n
+  in case index of
+    Just i -> dest_start + i
+    Nothing -> traverseMaps n ms
+
+rangeIndex :: Range -> Int -> Maybe Int
+rangeIndex (Range start end) n
+  | start <= n && n <= end = Just (n - start)
+  | otherwise = Nothing
 
 parseSeeds :: Text -> [Int]
 parseSeeds txt = map num . tail . T.words $ txt
@@ -59,7 +65,7 @@ parseMap txt =
   in map parseMapLine values
 
 parseMapLine :: [Int] -> Map
-parseMapLine [a,b,c] = Map a b c
+parseMapLine [a,b,c] = Map (Range a (a+c-1)) (Range b (b+c-1))
 
 
 
