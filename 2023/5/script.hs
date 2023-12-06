@@ -9,7 +9,7 @@ import Data.List
 import Data.List.Split
 import qualified Data.Text as T
 
-data Map = Map Range Range deriving (Show)
+data Map = Map Range Int deriving (Show)
 data Range = Range Int Int deriving (Show)
 
 main = do
@@ -32,15 +32,25 @@ main = do
   --print . minimum . map (findLocation maps) $ seeds'
 
 
+--optimizeMaps :: Range -> [[Map]] -> [Map]
+--optimizeMaps r ms
+--
+--optimize :: Range -> [Map] -> Mapdest_start + i
+--optimize r ms = foldl' (intersect) [] ms
+--
+--intersect :: Map -> Range -> Map
+--intersect m r = 
+
 findLocation :: [[Map]] -> Int -> Int
 findLocation ms n = foldl' (traverseMaps) n ms
 
 traverseMaps :: Int -> [Map] -> Int
 traverseMaps n [] = n
-traverseMaps n ((Map (Range dest_start _) source):ms) =
-  let index = rangeIndex source n
+traverseMaps n ((Map (Range start end) offset):ms) =
+  let index = rangeIndex (Range start end) n
+      dest = start + offset
   in case index of
-    Just i -> dest_start + i
+    Just i -> dest + i
     Nothing -> traverseMaps n ms
 
 rangeIndex :: Range -> Int -> Maybe Int
@@ -62,7 +72,7 @@ parseMap txt =
   in map parseMapLine values
 
 parseMapLine :: [Int] -> Map
-parseMapLine [a,b,c] = Map (Range a (a+c-1)) (Range b (b+c-1))
+parseMapLine [a,b,c] = Map (Range b (b+c-1)) (a-b)
 
 
 
